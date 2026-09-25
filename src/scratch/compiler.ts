@@ -3,6 +3,14 @@ import type {
   ScratchProjectJson,
   ScratchTarget
 } from "../core/types";
+import {
+  compileCustomBlock
+} from "./custom-blocks";
+import {
+  createPenBlock,
+  PEN_EXTENSION_ID,
+  type PenStateOperation
+} from "./extensions/pen";
 import { ScratchBlockFactory } from "./block-factory";
 import type {
   ScratchOperation,
@@ -29,17 +37,23 @@ export function applyScratchProgram(
     script.target
   );
 
-  const factory = new ScratchBlockFactory();
-  const variableIds = new Map<string, VariableRef>();
+  const factory =
+    new ScratchBlockFactory();
 
-  const compiled = compileOperations(
-    factory,
-    script.operations,
-    variableIds
-  );
+  const variableIds =
+    new Map<string, VariableRef>();
+
+  const compiled =
+    compileOperations(
+      factory,
+      script.operations,
+      variableIds
+    );
 
   if (!compiled.firstId) {
-    throw new Error("Scratch program is empty.");
+    throw new Error(
+      "Scratch program is empty."
+    );
   }
 
   mergeBlocks(
@@ -58,6 +72,24 @@ export function applyScratchProgram(
     project,
     variableIds
   );
+
+  if (
+    containsPenOperation(
+      script.operations
+    )
+  ) {
+    project.extensions ??= [];
+
+    if (
+      !project.extensions.includes(
+        PEN_EXTENSION_ID
+      )
+    ) {
+      project.extensions.push(
+        PEN_EXTENSION_ID
+      );
+    }
+  }
 
   return project;
 }
@@ -91,26 +123,47 @@ function compileOperations(
   };
 
   for (const operation of operations) {
-    const compiled = compileOperation(
-      factory,
-      operation,
-      variableIds
+    if (
+      operation.type ===
+      "customDefinition"
+    ) {
+      const custom =
+        compileCustomBlock(
+          factory,
+          operation.definition,
+          (
+            body,
+            argumentIds
+          ) => compileOperations(
+            factory,
+            body,
+            variableIds
+          )
+        );
+
+      mergeCompiled(
+        result,
+        {
+          firstId: "",
+          lastId: "",
+          blocks: custom.blocks
+        }
+      );
+
+      continue;
+    }
+
+    const compiled =
+      compileOperation(
+        factory,
+        operation,
+        variableIds
+      );
+
+    mergeCompiled(
+      result,
+      compiled
     );
-
-    for (const [id, block] of Object.entries(compiled.blocks)) {
-      result.blocks[id] = block;
-    }
-
-    if (!result.firstId) {
-      result.firstId = compiled.firstId;
-    }
-
-    if (result.lastId) {
-      result.blocks[result.lastId].next = compiled.firstId;
-      result.blocks[compiled.firstId].parent = result.lastId;
-    }
-
-    result.lastId = compiled.lastId;
   }
 
   return result;
@@ -118,18 +171,24 @@ function compileOperations(
 
 function compileOperation(
   factory: ScratchBlockFactory,
-  operation: ScratchOperation,
+  operation: Exclude<
+    ScratchOperation,
+    {
+      type: "customDefinition";
+    }
+  >,
   variableIds: Map<string, VariableRef>
 ): CompiledScript {
   if (
     operation.type === "repeat" ||
     operation.type === "forever"
   ) {
-    const nested = compileOperations(
-      factory,
-      operation.body,
-      variableIds
-    );
+    const nested =
+      compileOperations(
+        factory,
+        operation.body,
+        variableIds
+      );
 
     if (!nested.firstId) {
       throw new Error(
@@ -137,13 +196,16 @@ function compileOperation(
       );
     }
 
-    const result = factory.create(
-      operation.type === "repeat"
-        ? "control_repeat"
-        : "control_forever"
-    );
+    const result =
+      factory.create(
+        operation.type === "repeat"
+          ? "control_repeat"
+          : "control_forever"
+      );
 
-    if (operation.type === "repeat") {
+    if (
+      operation.type === "repeat"
+    ) {
       factory.repeat(
         result.block,
         operation.times,
@@ -156,31 +218,65 @@ function compileOperation(
       );
     }
 
-    nested.blocks[nested.firstId].parent = result.id;
-
-    const blocks: Record<string, ScratchBlock> = {
-      [result.id]: result.block,
-      ...nested.blocks
-    };
+    nested.blocks[
+      nested.firstId
+    ].parent = result.id;
 
     return {
       firstId: result.id,
       lastId: result.id,
-      blocks
+      blocks: {
+        [result.id]: result.block,
+        ...nested.blocks
+      }
     };
   }
 
-  const result = compileSimpleOperation(
-    factory,
-    operation,
-    variableIds
-  );
+  if (
+    operation.type === "customCall"
+  ) {
+    return compileCustomCall(
+      factory,
+      operation.proccode,
+      operation.argumentInputs,
+      operation.warp ?? false
+    );
+  }
+
+  if (
+    isPenOperation(
+      operation
+    )
+  ) {
+    const result =
+      createPenBlock(
+        factory,
+        operation
+      );
+
+    return {
+      firstId: result.id,
+      lastId: result.id,
+      blocks: {
+        [result.id]:
+          result.block
+      }
+    };
+  }
+
+  const result =
+    compileSimpleOperation(
+      factory,
+      operation,
+      variableIds
+    );
 
   return {
     firstId: result.id,
     lastId: result.id,
     blocks: {
-      [result.id]: result.block
+      [result.id]:
+        result.block
     }
   };
 }
@@ -193,23 +289,34 @@ function compileSimpleOperation(
       type: "repeat";
     } | {
       type: "forever";
-    }
+    } | {
+      type: "customDefinition";
+    } | {
+      type: "customCall";
+    } | PenStateOperation
   >,
   variableIds: Map<string, VariableRef>
 ): {
   id: string;
   block: ScratchBlock;
 } {
-  if (operation.type === "whenFlagClicked") {
+  if (
+    operation.type ===
+    "whenFlagClicked"
+  ) {
     return factory.create(
       "event_whenflagclicked"
     );
   }
 
-  if (operation.type === "moveSteps") {
-    const result = factory.create(
-      "motion_movesteps"
-    );
+  if (
+    operation.type ===
+    "moveSteps"
+  ) {
+    const result =
+      factory.create(
+        "motion_movesteps"
+      );
 
     factory.moveSteps(
       result.block,
@@ -219,10 +326,14 @@ function compileSimpleOperation(
     return result;
   }
 
-  if (operation.type === "turnRight") {
-    const result = factory.create(
-      "motion_turnright"
-    );
+  if (
+    operation.type ===
+    "turnRight"
+  ) {
+    const result =
+      factory.create(
+        "motion_turnright"
+      );
 
     factory.turnRight(
       result.block,
@@ -232,10 +343,14 @@ function compileSimpleOperation(
     return result;
   }
 
-  if (operation.type === "goToXY") {
-    const result = factory.create(
-      "motion_gotoxy"
-    );
+  if (
+    operation.type ===
+    "goToXY"
+  ) {
+    const result =
+      factory.create(
+        "motion_gotoxy"
+      );
 
     factory.goToXY(
       result.block,
@@ -246,10 +361,14 @@ function compileSimpleOperation(
     return result;
   }
 
-  if (operation.type === "say") {
-    const result = factory.create(
-      "looks_say"
-    );
+  if (
+    operation.type ===
+    "say"
+  ) {
+    const result =
+      factory.create(
+        "looks_say"
+      );
 
     factory.say(
       result.block,
@@ -259,10 +378,14 @@ function compileSimpleOperation(
     return result;
   }
 
-  if (operation.type === "wait") {
-    const result = factory.create(
-      "control_wait"
-    );
+  if (
+    operation.type ===
+    "wait"
+  ) {
+    const result =
+      factory.create(
+        "control_wait"
+      );
 
     factory.wait(
       result.block,
@@ -272,18 +395,24 @@ function compileSimpleOperation(
     return result;
   }
 
-  const variable = getVariableRef(
-    variableIds,
-    operation.name
-  );
+  const variable =
+    getVariableRef(
+      variableIds,
+      operation.name
+    );
 
-  const result = factory.create(
-    operation.type === "setVariable"
-      ? "data_setvariableto"
-      : "data_changevariableby"
-  );
+  const result =
+    factory.create(
+      operation.type ===
+        "setVariable"
+        ? "data_setvariableto"
+        : "data_changevariableby"
+    );
 
-  if (operation.type === "setVariable") {
+  if (
+    operation.type ===
+    "setVariable"
+  ) {
     factory.setVariable(
       result.block,
       variable.name,
@@ -302,11 +431,112 @@ function compileSimpleOperation(
   return result;
 }
 
+function compileCustomCall(
+  factory: ScratchBlockFactory,
+  proccode: string,
+  argumentInputs: Record<
+    string,
+    string | number | boolean
+  >,
+  warp: boolean
+): CompiledScript {
+  const result =
+    factory.create(
+      "procedures_call"
+    );
+
+  result.block.mutation = {
+    tagName: "mutation",
+    children: [],
+    proccode,
+    argumentids: JSON.stringify(
+      Object.keys(argumentInputs)
+    ),
+    warp: String(warp)
+  };
+
+  result.block.inputs = {};
+
+  for (
+    const [argumentId, value]
+    of Object.entries(argumentInputs)
+  ) {
+    if (
+      typeof value ===
+      "boolean"
+    ) {
+      throw new Error(
+        "Boolean custom block literals require a reporter block."
+      );
+    }
+
+    result.block.inputs[
+      argumentId
+    ] = typeof value === "number"
+      ? factory.number(value)
+      : factory.text(value);
+  }
+
+  return {
+    firstId: result.id,
+    lastId: result.id,
+    blocks: {
+      [result.id]:
+        result.block
+    }
+  };
+}
+
+function mergeCompiled(
+  target: CompiledScript,
+  source: CompiledScript
+): void {
+  for (
+    const [id, block]
+    of Object.entries(
+      source.blocks
+    )
+  ) {
+    target.blocks[id] =
+      block;
+  }
+
+  if (
+    !source.firstId
+  ) {
+    return;
+  }
+
+  if (
+    !target.firstId
+  ) {
+    target.firstId =
+      source.firstId;
+    target.lastId =
+      source.lastId;
+    return;
+  }
+
+  target.blocks[
+    target.lastId
+  ].next =
+    source.firstId;
+
+  target.blocks[
+    source.firstId
+  ].parent =
+    target.lastId;
+
+  target.lastId =
+    source.lastId;
+}
+
 function getVariableRef(
   variables: Map<string, VariableRef>,
   name: string
 ): VariableRef {
-  const existing = variables.get(name);
+  const existing =
+    variables.get(name);
 
   if (existing) {
     return existing;
@@ -329,13 +559,17 @@ function ensureVariables(
   project: ScratchProjectJson,
   variables: Map<string, VariableRef>
 ): void {
-  if (variables.size === 0) {
+  if (
+    variables.size === 0
+  ) {
     return;
   }
 
-  const stage = project.targets.find(
-    (target) => target.isStage
-  );
+  const stage =
+    project.targets.find(
+      (target) =>
+        target.isStage
+    );
 
   if (!stage) {
     throw new Error(
@@ -345,8 +579,13 @@ function ensureVariables(
 
   stage.variables ??= {};
 
-  for (const variable of variables.values()) {
-    stage.variables[variable.id] ??= [
+  for (
+    const variable
+    of variables.values()
+  ) {
+    stage.variables[
+      variable.id
+    ] ??= [
       variable.name,
       0
     ];
@@ -357,8 +596,12 @@ function mergeBlocks(
   target: ScratchTarget,
   blocks: Record<string, ScratchBlock>
 ): void {
-  for (const [id, block] of Object.entries(blocks)) {
-    target.blocks[id] = block;
+  for (
+    const [id, block]
+    of Object.entries(blocks)
+  ) {
+    target.blocks[id] =
+      block;
   }
 }
 
@@ -368,7 +611,8 @@ function placeTopLevelScript(
   x: number,
   y: number
 ): void {
-  const block = target.blocks[firstId];
+  const block =
+    target.blocks[firstId];
 
   if (!block) {
     throw new Error(
@@ -380,4 +624,54 @@ function placeTopLevelScript(
   block.parent = null;
   block.x = x;
   block.y = y;
+}
+
+function containsPenOperation(
+  operations: ScratchOperation[]
+): boolean {
+  return operations.some(
+    (operation) => {
+      if (
+        operation.type ===
+        "customDefinition"
+      ) {
+        return containsPenOperation(
+          operation.definition.body
+        );
+      }
+
+      if (
+        operation.type ===
+        "repeat" ||
+        operation.type ===
+        "forever"
+      ) {
+        return containsPenOperation(
+          operation.body
+        );
+      }
+
+      return isPenOperation(
+        operation
+      );
+    }
+  );
+}
+
+function isPenOperation(
+  operation: ScratchOperation
+): operation is PenStateOperation {
+  return [
+    "clear",
+    "stamp",
+    "penDown",
+    "penUp",
+    "setColor",
+    "changeColorParam",
+    "setColorParam",
+    "changeSize",
+    "setSize"
+  ].includes(
+    operation.type
+  );
 }
