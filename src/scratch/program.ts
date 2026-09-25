@@ -1,4 +1,7 @@
 import type {
+  CostumeSpec
+} from "../costume/spec";
+import type {
   PenStateOperation
 } from "./extensions/pen";
 import type {
@@ -67,6 +70,7 @@ export type ScratchOperation =
 export interface ScratchScriptSpec {
   target: string;
   operations: ScratchOperation[];
+  costumes?: CostumeSpec[];
   x?: number;
   y?: number;
 }
