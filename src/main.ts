@@ -4,7 +4,8 @@ import { createScratchAsset, createScratchProject } from "./scratch/project-fact
 import { applyScratchProgram } from "./scratch/compiler";
 import { evaluateScratchFeasibility } from "./agent/feasibility";
 import { planScratchRequest } from "./agent/demo-planner";
-import { validateGenerationPlan } from "./agent/plan-validator";\nimport { compileCostumes } from "./costume/compiler";
+import { validateGenerationPlan } from "./agent/plan-validator";
+import { compileCostumes } from "./costume/compiler";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 
