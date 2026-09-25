@@ -241,7 +241,6 @@ document
 
         if (plan.verdict === "OPPOSE") {
           setStatus(
-            plan.reason ??
             "この内容は現在の生成器では安定して実装できません。"
           );
           return;
