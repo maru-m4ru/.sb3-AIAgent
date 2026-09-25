@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "knowledge:sync": "node scripts/sync-scratchwiki.mjs",
+    "knowledge:index": "node scripts/build-knowledge-index.mjs",
+    "knowledge:update": "npm run knowledge:sync && npm run knowledge:index"
   },
   "dependencies": {
     "jszip": "^3.10.1"
