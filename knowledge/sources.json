@@ -1,0 +1,41 @@
+{
+  "primary": {
+    "name": "Scratch Wiki",
+    "url": "https://en.scratch-wiki.info/",
+    "purpose": [
+      "Scratch programming concepts",
+      "Scratch project behavior",
+      "file format documentation",
+      "implementation techniques",
+      "compatibility and limitations"
+    ]
+  },
+  "technical": [
+    {
+      "name": "scratchfoundation/scratch-vm",
+      "url": "https://github.com/scratchfoundation/scratch-vm",
+      "purpose": [
+        "runtime block representation",
+        "opcode behavior",
+        "project AST behavior"
+      ]
+    },
+    {
+      "name": "scratchfoundation/scratch-blocks",
+      "url": "https://github.com/scratchfoundation/scratch-blocks",
+      "purpose": [
+        "block definitions",
+        "block UI behavior",
+        "Scratch block structure"
+      ]
+    }
+  ],
+  "policy": {
+    "priority": [
+      "Scratch Wiki",
+      "Scratch official source repositories",
+      "Scratch project format observed in valid projects"
+    ],
+    "conflict": "Prefer machine-readable official implementation behavior when a general descriptive page is ambiguous, while preserving the Wiki as a primary reference."
+  }
+}
