@@ -5,9 +5,6 @@ import type {
   ScratchPlan
 } from "./protocol";
 import type {
-  ScratchScriptSpec
-} from "../scratch/program";
-import type {
   ScratchOperation,
   ScratchScriptSpec
 } from "../scratch/program";
