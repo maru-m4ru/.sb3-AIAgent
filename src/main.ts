@@ -4,7 +4,7 @@ import { createScratchAsset, createScratchProject } from "./scratch/project-fact
 import { applyScratchProgram } from "./scratch/compiler";
 import { evaluateScratchFeasibility } from "./agent/feasibility";
 import { planScratchRequest } from "./agent/demo-planner";
-import { validateGenerationPlan } from "./agent/plan-validator";
+import { validateGenerationPlan } from "./agent/plan-validator";\nimport { compileCostumes } from "./costume/compiler";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 
@@ -197,10 +197,28 @@ document
         plan.script
       );
 
-      generatedProject = project;
       generatedAssets = [
         createScratchAsset()
       ];
+
+      const sprite = project.targets.find(
+        (target) => target.name === plan.script.target
+      );
+
+      if (!sprite) {
+        throw new Error(
+          `Scratch target not found: ${plan.script.target}`
+        );
+      }
+
+      generatedAssets.push(
+        ...compileCostumes(
+          sprite,
+          plan.script.costumes ?? []
+        )
+      );
+
+      generatedProject = project;
 
       generationStatus.textContent =
         JSON.stringify(
