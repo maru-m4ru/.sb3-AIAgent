@@ -1,9 +1,31 @@
 import JSZip from "jszip";
 import type { LoadedScratchProject } from "../core/types";
+import { validateScratchProject } from "../scratch/validator";
 
 export async function buildSb3(
   project: LoadedScratchProject
 ): Promise<Blob> {
+  const validation =
+    validateScratchProject(
+      project.project
+    );
+
+  const errors =
+    validation.issues.filter(
+      (issue) => issue.level === "error"
+    );
+
+  if (errors.length > 0) {
+    throw new Error(
+      [
+        "Scratch project validation failed:",
+        ...errors.map(
+          (issue) => issue.message
+        )
+      ].join("\n")
+    );
+  }
+
   const zip = new JSZip();
 
   zip.file(
@@ -12,7 +34,10 @@ export async function buildSb3(
   );
 
   for (const asset of project.assets) {
-    zip.file(asset.md5ext, asset.bytes);
+    zip.file(
+      asset.md5ext,
+      asset.bytes
+    );
   }
 
   return zip.generateAsync({
