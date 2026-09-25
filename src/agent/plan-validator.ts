@@ -5,6 +5,9 @@ import type {
   ScratchPlan
 } from "./protocol";
 import type {
+  ScratchScriptSpec
+} from "../scratch/program";
+import type {
   ScratchOperation,
   ScratchScriptSpec
 } from "../scratch/program";
@@ -73,6 +76,9 @@ export function validateGenerationPlan(
     script: {
       target,
       operations: operations as ScratchOperation[],
+      costumes: Array.isArray(value.script.costumes)
+        ? value.script.costumes as ScratchScriptSpec["costumes"]
+        : undefined,
       x: typeof value.script.x === "number"
         ? value.script.x
         : undefined,
