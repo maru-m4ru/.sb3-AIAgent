@@ -1,3 +1,10 @@
+import type {
+  PenStateOperation
+} from "./extensions/pen";
+import type {
+  CustomBlockSpec
+} from "./custom-blocks";
+
 export type ScratchOperation =
   | {
       type: "whenFlagClicked";
@@ -41,7 +48,21 @@ export type ScratchOperation =
   | {
       type: "forever";
       body: ScratchOperation[];
-    };
+    }
+  | {
+      type: "customDefinition";
+      definition: CustomBlockSpec;
+    }
+  | {
+      type: "customCall";
+      proccode: string;
+      argumentInputs: Record<
+        string,
+        string | number | boolean
+      >;
+      warp?: boolean;
+    }
+  | PenStateOperation;
 
 export interface ScratchScriptSpec {
   target: string;
