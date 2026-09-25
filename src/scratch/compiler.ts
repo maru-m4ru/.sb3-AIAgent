@@ -24,7 +24,11 @@ export function applyScratchProgram(
   project: ScratchProjectJson,
   script: ScratchScriptSpec
 ): ScratchProjectJson {
-  const target = findTarget(project, script.target);
+  const target = findTarget(
+    project,
+    script.target
+  );
+
   const factory = new ScratchBlockFactory();
   const variableIds = new Map<string, VariableRef>();
 
@@ -34,7 +38,15 @@ export function applyScratchProgram(
     variableIds
   );
 
-  mergeBlocks(target, compiled.blocks);
+  if (!compiled.firstId) {
+    throw new Error("Scratch program is empty.");
+  }
+
+  mergeBlocks(
+    target,
+    compiled.blocks
+  );
+
   placeTopLevelScript(
     target,
     compiled.firstId,
@@ -59,7 +71,9 @@ function findTarget(
   );
 
   if (!target) {
-    throw new Error(`Scratch target not found: ${name}`);
+    throw new Error(
+      `Scratch target not found: ${name}`
+    );
   }
 
   return target;
@@ -70,131 +84,104 @@ function compileOperations(
   operations: ScratchOperation[],
   variableIds: Map<string, VariableRef>
 ): CompiledScript {
-  const blocks: Record<string, ScratchBlock> = {};
-  let firstId = "";
-  let lastId = "";
+  const result: CompiledScript = {
+    firstId: "",
+    lastId: "",
+    blocks: {}
+  };
 
   for (const operation of operations) {
-    if (operation.type === "repeat") {
-      const nested = compileOperations(
-        factory,
-        operation.body,
-        variableIds
-      );
-
-      if (!nested.firstId) {
-        throw new Error("A repeat block requires a non-empty body.");
-      }
-
-      const result = factory.create("control_repeat");
-      factory.repeat(
-        result.block,
-        operation.times,
-        nested.firstId
-      );
-
-      nested.blocks[nested.firstId].parent = result.id;
-      blocks[result.id] = result.block;
-
-      for (const [id, block] of Object.entries(nested.blocks)) {
-        blocks[id] = block;
-      }
-
-      append(
-        blocks,
-        {
-          firstId: result.id,
-          lastId: result.id,
-          blocks: {}
-        },
-        {
-          firstId: result.id,
-          lastId: result.id,
-          blocks: {}
-        }
-      );
-
-      const script = {
-        firstId: result.id,
-        lastId: result.id,
-        blocks
-      };
-
-      return appendCompiledScript(
-        script,
-        {
-          firstId: nested.firstId,
-          lastId: nested.lastId,
-          blocks: {}
-        },
-        blocks
-      );
-    }
-
-    if (operation.type === "forever") {
-      const nested = compileOperations(
-        factory,
-        operation.body,
-        variableIds
-      );
-
-      if (!nested.firstId) {
-        throw new Error("A forever block requires a non-empty body.");
-      }
-
-      const result = factory.create("control_forever");
-
-      factory.forever(
-        result.block,
-        nested.firstId
-      );
-
-      nested.blocks[nested.firstId].parent = result.id;
-      blocks[result.id] = result.block;
-
-      for (const [id, block] of Object.entries(nested.blocks)) {
-        blocks[id] = block;
-      }
-
-      return appendCompiledScript(
-        {
-          firstId: result.id,
-          lastId: result.id,
-          blocks
-        },
-        {
-          firstId: nested.firstId,
-          lastId: nested.lastId,
-          blocks: {}
-        },
-        blocks
-      );
-    }
-
-    const created = compileSimpleOperation(
+    const compiled = compileOperation(
       factory,
       operation,
       variableIds
     );
 
-    blocks[created.id] = created.block;
-
-    if (!firstId) {
-      firstId = created.id;
+    for (const [id, block] of Object.entries(compiled.blocks)) {
+      result.blocks[id] = block;
     }
 
-    if (lastId) {
-      blocks[lastId].next = created.id;
-      created.block.parent = lastId;
+    if (!result.firstId) {
+      result.firstId = compiled.firstId;
     }
 
-    lastId = created.id;
+    if (result.lastId) {
+      result.blocks[result.lastId].next = compiled.firstId;
+      result.blocks[compiled.firstId].parent = result.lastId;
+    }
+
+    result.lastId = compiled.lastId;
   }
 
+  return result;
+}
+
+function compileOperation(
+  factory: ScratchBlockFactory,
+  operation: ScratchOperation,
+  variableIds: Map<string, VariableRef>
+): CompiledScript {
+  if (
+    operation.type === "repeat" ||
+    operation.type === "forever"
+  ) {
+    const nested = compileOperations(
+      factory,
+      operation.body,
+      variableIds
+    );
+
+    if (!nested.firstId) {
+      throw new Error(
+        `${operation.type} requires a non-empty body.`
+      );
+    }
+
+    const result = factory.create(
+      operation.type === "repeat"
+        ? "control_repeat"
+        : "control_forever"
+    );
+
+    if (operation.type === "repeat") {
+      factory.repeat(
+        result.block,
+        operation.times,
+        nested.firstId
+      );
+    } else {
+      factory.forever(
+        result.block,
+        nested.firstId
+      );
+    }
+
+    nested.blocks[nested.firstId].parent = result.id;
+
+    const blocks: Record<string, ScratchBlock> = {
+      [result.id]: result.block,
+      ...nested.blocks
+    };
+
+    return {
+      firstId: result.id,
+      lastId: result.id,
+      blocks
+    };
+  }
+
+  const result = compileSimpleOperation(
+    factory,
+    operation,
+    variableIds
+  );
+
   return {
-    firstId,
-    lastId,
-    blocks
+    firstId: result.id,
+    lastId: result.id,
+    blocks: {
+      [result.id]: result.block
+    }
   };
 }
 
@@ -330,7 +317,10 @@ function getVariableRef(
     id: `var-${variables.size + 1}`
   };
 
-  variables.set(name, ref);
+  variables.set(
+    name,
+    ref
+  );
 
   return ref;
 }
@@ -348,7 +338,9 @@ function ensureVariables(
   );
 
   if (!stage) {
-    throw new Error("Scratch project has no Stage target.");
+    throw new Error(
+      "Scratch project has no Stage target."
+    );
   }
 
   stage.variables ??= {};
@@ -379,38 +371,13 @@ function placeTopLevelScript(
   const block = target.blocks[firstId];
 
   if (!block) {
-    throw new Error("Compiled script has no first block.");
+    throw new Error(
+      "Compiled script has no first block."
+    );
   }
 
   block.topLevel = true;
   block.parent = null;
   block.x = x;
   block.y = y;
-}
-
-function append(
-  blocks: Record<string, ScratchBlock>,
-  current: CompiledScript,
-  next: CompiledScript
-): void {
-  if (!current.lastId || !next.firstId) {
-    return;
-  }
-
-  blocks[current.lastId].next = next.firstId;
-  blocks[next.firstId].parent = current.lastId;
-}
-
-function appendCompiledScript(
-  current: CompiledScript,
-  nested: CompiledScript,
-  blocks: Record<string, ScratchBlock>
-): CompiledScript {
-  if (nested.firstId) {
-    for (const [id, block] of Object.entries(nested.blocks)) {
-      blocks[id] = block;
-    }
-  }
-
-  return current;
 }
