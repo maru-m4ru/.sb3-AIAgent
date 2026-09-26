@@ -76,9 +76,9 @@ button {
   min-height: 47px;
   display: grid;
   grid-template-columns: 27px minmax(0, 1fr);
-  column-gap: 8px;
+  column-gap: 9px;
   align-items: center;
-  padding: 4px 5px;
+  padding: 4px 6px;
   border-radius: 7px;
   cursor: pointer;
   color: #000000;
@@ -107,19 +107,21 @@ button {
   justify-content: flex-start;
 }
 
-.nav-icon svg {
+.nav-icon img {
   display: block;
   width: 27px;
   height: 27px;
-  overflow: visible;
+  object-fit: contain;
 }
 
-.nav-icon-file {
-  transform: translateY(-1px);
+.nav-icon-file img {
+  width: 27px;
+  height: 18px;
 }
 
-.nav-icon-preview {
-  transform: translateY(1px);
+.nav-icon-preview img {
+  width: 28px;
+  height: 24px;
 }
 
 .nav-copy {
@@ -142,7 +144,10 @@ button {
 .nav-subtitle {
   align-self: center;
   margin-top: 4px;
-  font-family: "Segoe UI", system-ui, sans-serif;
+  font-family:
+    "Segoe UI",
+    system-ui,
+    sans-serif;
   font-size: 7px;
   font-weight: 400;
   line-height: 1;
@@ -161,10 +166,10 @@ button {
   cursor: pointer;
 }
 
-.settings-button svg {
+.settings-button img {
   display: block;
   width: 24px;
-  height: 24px;
+  height: 21px;
 }
 
 .settings-button:hover {
@@ -187,109 +192,88 @@ button {
 }
 
 .screen-home {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  place-items: center;
+  min-height: calc(100vh - 26px);
 }
 
-.hero {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 58px 20px 112px;
-  text-align: center;
-}
-
-.hero-copy {
-  transform: translateY(-8px);
-}
-
-.hero-title {
-  margin: 0;
-  font-size: clamp(38px, 3.7vw, 54px);
-  line-height: 1;
-  font-weight: 400;
-  letter-spacing: -0.03em;
-}
-
-.hero-version {
-  display: block;
-  margin-top: 7px;
-  font-size: clamp(31px, 2.9vw, 42px);
-  line-height: 1;
-  font-weight: 400;
-  letter-spacing: -0.02em;
-}
-
-.composer-area {
-  width: min(610px, 70vw);
-  margin: 0 auto;
-}
-
-.composer {
+.home-reference {
   position: relative;
-  min-height: 68px;
-  width: 100%;
-  padding: 11px 44px 10px 12px;
-  border: 1px solid #d6d6d6;
-  border-radius: 10px;
-  background: #fbfbfb;
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.035);
+  height: min(820px, calc(100vh - 28px));
+  aspect-ratio: 377.15765 / 618.42924;
+  overflow: hidden;
+  background: #fdfdfd;
 }
 
-.composer:focus-within {
-  border-color: #bcbcbc;
+.home-reference-image {
+  position: absolute;
+  top: 0;
+  left: -42.548%;
+  height: 100%;
+  width: auto;
+  max-width: none;
+  user-select: none;
+  pointer-events: none;
 }
 
-.composer-input {
-  display: block;
-  width: 100%;
-  min-height: 42px;
-  max-height: 140px;
+.reference-composer {
+  position: absolute;
+  left: 0.5%;
+  top: 43.72%;
+  width: 80.7%;
+  height: 10.75%;
+}
+
+.reference-input {
+  position: absolute;
+  left: 2.6%;
+  top: 14%;
+  width: 87%;
+  height: 70%;
   resize: none;
-  padding: 1px 0 0;
+  overflow: auto;
   border: 0;
   outline: 0;
+  padding: 0;
   background: transparent;
   color: #111111;
-  line-height: 1.25;
-  font-size: 13px;
-  font-weight: 400;
+  font-family:
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.35;
 }
 
-.composer-input::placeholder {
-  color: #cbcbcb;
+.reference-input::placeholder {
+  color: transparent;
 }
 
-.send-button {
+.reference-send {
   position: absolute;
-  right: 9px;
-  bottom: 9px;
-  width: 20px;
-  height: 20px;
+  right: 2%;
+  bottom: 10%;
+  width: 24px;
+  height: 24px;
   padding: 0;
   cursor: pointer;
 }
 
-.send-button svg {
+.reference-send img {
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
 }
 
-.send-button:hover {
-  filter: brightness(0.94);
-}
-
-.status {
-  min-height: 23px;
-  padding: 6px 2px 0;
+.reference-status {
+  position: absolute;
+  left: 0;
+  top: 56.3%;
+  width: 100%;
   font-size: 11px;
   line-height: 1.35;
   color: #777777;
   text-align: center;
-  white-space: pre-wrap;
 }
 
 .screen:not(.screen-home) {
@@ -297,16 +281,20 @@ button {
 }
 
 .screen-header {
-  min-height: 56px;
+  min-height: 58px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 20px;
+  gap: 24px;
+}
+
+.screen-heading {
+  min-width: 0;
 }
 
 .screen-title {
   margin: 0;
-  font-size: 28px;
+  font-size: 29px;
   font-weight: 400;
   line-height: 1;
   letter-spacing: -0.025em;
@@ -319,17 +307,10 @@ button {
   letter-spacing: 0.02em;
 }
 
-.section-rule {
-  width: 100%;
-  height: 1px;
-  margin: 18px 0 22px;
-  background: #d7d7d7;
-}
-
 .screen-primary {
-  min-width: 112px;
-  padding: 8px 11px;
-  border: 1px solid #cdcdcd;
+  min-width: 116px;
+  padding: 8px 12px;
+  border: 1px solid #cfcfcf;
   border-radius: 7px;
   background: #ffffff;
   cursor: pointer;
@@ -340,40 +321,57 @@ button {
   background: #f5f5f5;
 }
 
+.section-rule {
+  height: 1px;
+  margin: 17px 0 0;
+  background: #bfbfbf;
+}
+
 .file-list {
   width: 100%;
-  border-top: 1px solid #e5e5e5;
 }
 
 .file-empty {
-  min-height: 180px;
+  min-height: 300px;
   display: grid;
   place-items: center;
-  padding: 30px;
-  color: #999999;
-  font-size: 12px;
-  border-bottom: 1px solid #e7e7e7;
+  padding: 40px;
+  text-align: center;
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.file-empty-title {
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.file-empty-copy {
+  margin-top: 8px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: #868686;
 }
 
 .file-row {
-  min-height: 72px;
+  min-height: 76px;
   display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) auto auto auto;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
   align-items: center;
-  gap: 14px;
-  padding: 10px 4px;
-  border-bottom: 1px solid #e7e7e7;
+  gap: 17px;
+  padding: 13px 5px;
+  border-bottom: 1px solid #dddddd;
 }
 
-.file-row-icon {
+.file-type {
   width: 42px;
   height: 30px;
   display: grid;
   place-items: center;
   border: 1px solid #000000;
   border-radius: 4px;
-  font-family: ui-monospace, monospace;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 8px;
+  letter-spacing: 0.04em;
 }
 
 .file-row-copy {
@@ -393,9 +391,16 @@ button {
   color: #8a8a8a;
 }
 
+.file-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
 .file-action {
-  padding: 6px 8px;
-  border-radius: 6px;
+  min-width: 50px;
+  padding: 7px 8px;
+  border-radius: 5px;
   cursor: pointer;
   font-size: 10px;
 }
@@ -414,12 +419,21 @@ button {
   place-items: center;
 }
 
-.preview-stage {
-  width: min(640px, 78vw);
+.preview-card {
+  position: relative;
+  width: min(760px, 82vw);
   aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
   overflow: hidden;
-  border: 1px solid #dcdcdc;
+  border: 1px solid #d1d1d1;
   background: #ffffff;
+}
+
+.preview-stage {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .preview-stage canvas {
@@ -429,8 +443,14 @@ button {
 }
 
 .preview-empty {
-  width: min(480px, 100%);
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  padding: 30px;
   text-align: center;
+  background: #ffffff;
 }
 
 .preview-empty[hidden],
@@ -444,6 +464,7 @@ button {
 }
 
 .preview-empty-copy {
+  max-width: 420px;
   margin-top: 9px;
   font-size: 11px;
   line-height: 1.6;
@@ -469,10 +490,24 @@ button {
     column-gap: 5px;
   }
 
-  .nav-icon,
-  .nav-icon svg {
+  .nav-icon {
     width: 25px;
     height: 25px;
+  }
+
+  .nav-icon img {
+    width: 25px;
+    height: 25px;
+  }
+
+  .nav-icon-file img {
+    width: 25px;
+    height: 17px;
+  }
+
+  .nav-icon-preview img {
+    width: 26px;
+    height: 22px;
   }
 
   .nav-title {
@@ -484,12 +519,22 @@ button {
     padding-right: 18px;
   }
 
-  .hero {
-    padding-bottom: 88px;
+  .home-reference {
+    height: min(720px, calc(100vh - 28px));
   }
 
-  .composer-area {
-    width: min(610px, 88vw);
+  .reference-input {
+    font-size: 12px;
+  }
+
+  .reference-send {
+    width: 20px;
+    height: 20px;
+  }
+
+  .reference-send img {
+    width: 20px;
+    height: 20px;
   }
 
   .screen-header {
@@ -500,12 +545,12 @@ button {
     grid-template-columns: 46px minmax(0, 1fr);
   }
 
-  .file-action {
+  .file-row-actions {
     grid-column: 2;
     justify-self: start;
   }
 
-  .preview-stage {
-    width: min(640px, 92vw);
+  .preview-card {
+    width: min(760px, 92vw);
   }
 }
