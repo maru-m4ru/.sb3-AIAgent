@@ -556,17 +556,7 @@ button {
   }
 
   .reference-input {
-    font-size: 12px;
-  }
-
-  .reference-send {
-    width: 20px;
-    height: 20px;
-  }
-
-  .reference-send img {
-    width: 20px;
-    height: 20px;
+    font-size: 11px;
   }
 
   .screen-header {
