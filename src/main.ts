@@ -1,4 +1,3 @@
-
 import "./ui.css";
 import { buildSb3, downloadBlob } from "./sb3/builder";
 import { loadScratchProjectFile } from "./scratch/local-project";
@@ -32,65 +31,61 @@ const uiAsset =
   uiBase;
 
 app.innerHTML = [
-  '<div class="app-shell">',
+  '<div class="ui-frame">',
   '  <aside class="sidebar">',
-  '    <div class="model-name">モデル名</div>',
-  '    <nav class="nav" aria-label="メインメニュー">',
-  '      <button class="nav-button nav-button-active" id="new-chat" type="button" data-screen="home">',
-  '        <span class="nav-icon"><img src="' + uiAsset + 'new-chat.svg" alt=""></span>',
-  '        <span class="nav-copy"><span class="nav-title">新しいチャット</span><span class="nav-subtitle">new chat</span></span>',
+  '    <div class="sidebar-model">モデル名</div>',
+  '    <nav class="sidebar-nav" aria-label="メインメニュー">',
+  '      <button class="nav-button" id="new-chat" type="button" data-screen="home">',
+  '        <img class="nav-icon nav-icon-new" src="' + uiAsset + 'new-chat.svg" alt="">',
+  '        <span class="nav-label"><span class="nav-title">新しいチャット</span><span class="nav-subtitle">new chat</span></span>',
   '      </button>',
   '      <button class="nav-button" id="file-menu" type="button" data-screen="files">',
-  '        <span class="nav-icon nav-icon-file"><img src="' + uiAsset + 'file.svg" alt=""></span>',
-  '        <span class="nav-copy"><span class="nav-title">ファイル</span><span class="nav-subtitle">file</span></span>',
+  '        <img class="nav-icon nav-icon-file" src="' + uiAsset + 'file.svg" alt="">',
+  '        <span class="nav-label"><span class="nav-title">ファイル</span><span class="nav-subtitle">file</span></span>',
   '      </button>',
   '      <button class="nav-button" id="preview-menu" type="button" data-screen="preview">',
-  '        <span class="nav-icon nav-icon-preview"><img src="' + uiAsset + 'preview.svg" alt=""></span>',
-  '        <span class="nav-copy"><span class="nav-title">プレビュー</span><span class="nav-subtitle">preview</span></span>',
+  '        <img class="nav-icon nav-icon-preview" src="' + uiAsset + 'preview.svg" alt="">',
+  '        <span class="nav-label"><span class="nav-title">プレビュー</span><span class="nav-subtitle">preview</span></span>',
   '      </button>',
   '    </nav>',
-  '    <div class="sidebar-bottom">',
-  '      <button class="settings-button" id="settings-menu" type="button" aria-label="設定">',
-  '        <img src="' + uiAsset + 'settings.svg" alt="">',
-  '      </button>',
-  '    </div>',
+  '    <button class="settings-button" id="settings-menu" type="button" aria-label="設定">',
+  '      <img src="' + uiAsset + 'settings.svg" alt="">',
+  '    </button>',
   '    <input class="hidden-input" id="file-input" type="file" accept=".sb3,application/x.scratch.sb3,application/zip">',
   '  </aside>',
-  '  <main class="workspace">',
+  '  <main class="content">',
   '    <section class="screen screen-home" id="screen-home">',
-  '      <div class="home-reference">',
-  '        <img class="home-reference-image" src="' + uiBase + 'reference.svg" alt="">',
-  '        <form class="reference-composer" id="composer">',
-  '          <textarea class="reference-input" id="request" rows="1" aria-label="Scratchプロジェクトの作成指示" spellcheck="false"></textarea>',
-  '          <button class="reference-send" type="submit" aria-label="生成">',
-  '            <img src="' + uiAsset + 'send.svg" alt="">',
-  '          </button>',
-  '        </form>',
-  '        <div class="reference-status" id="status">新しいプロジェクトを作成できます。</div>',
-  '      </div>',
+  '      <h1 class="home-title">モデル名<span>(バージョン)</span></h1>',
+  '      <form class="prompt-box" id="composer">',
+  '        <textarea class="prompt-input" id="request" rows="1" aria-label="Scratchプロジェクトの作成指示" placeholder="作成したいプロジェクトのイメージは？" spellcheck="false"></textarea>',
+  '        <button class="prompt-send" type="submit" aria-label="生成">',
+  '          <img src="' + uiAsset + 'send.svg" alt="">',
+  '        </button>',
+  '      </form>',
+  '      <div class="home-status" id="status" aria-live="polite"></div>',
   '    </section>',
   '    <section class="screen screen-files" id="screen-files" hidden>',
-  '      <div class="screen-header">',
-  '        <div class="screen-heading">',
+  '      <header class="screen-topbar">',
+  '        <div>',
   '          <h1 class="screen-title">AI生成ファイル</h1>',
   '          <div class="screen-subtitle">generated files</div>',
   '        </div>',
-  '        <button class="screen-primary" id="file-import" type="button">.sb3を取り込む</button>',
-  '      </div>',
-  '      <div class="section-rule"></div>',
+  '        <button class="screen-action" id="file-import" type="button">.sb3を取り込む</button>',
+  '      </header>',
+  '      <div class="screen-line"></div>',
   '      <div class="file-list" id="file-list"></div>',
   '    </section>',
   '    <section class="screen screen-preview" id="screen-preview" hidden>',
-  '      <div class="screen-header">',
-  '        <div class="screen-heading">',
+  '      <header class="screen-topbar">',
+  '        <div>',
   '          <h1 class="screen-title">プレビュー</h1>',
   '          <div class="screen-subtitle">TurboWarp</div>',
   '        </div>',
-  '        <button class="screen-primary" id="preview-save" type="button">.sb3を保存</button>',
-  '      </div>',
-  '      <div class="section-rule"></div>',
-  '      <div class="preview-workspace">',
-  '        <div class="preview-card">',
+  '        <button class="screen-action" id="preview-save" type="button">.sb3を保存</button>',
+  '      </header>',
+  '      <div class="screen-line"></div>',
+  '      <div class="preview-area">',
+  '        <div class="preview-box">',
   '          <div class="preview-stage" id="preview-stage"></div>',
   '          <div class="preview-empty" id="preview-empty">',
   '            <div class="preview-empty-title">プレビューするプロジェクトがありません</div>',
@@ -174,9 +169,7 @@ function setActiveNav(
   screen: string
 ): void {
   document
-    .querySelectorAll<HTMLButtonElement>(
-      ".nav-button"
-    )
+    .querySelectorAll<HTMLButtonElement>(".nav-button")
     .forEach((button) => {
       button.classList.toggle(
         "nav-button-active",
@@ -202,8 +195,12 @@ function showScreen(
         element.id !== "screen-" + screen;
     });
 
-  activeScreen = screen;
-  setActiveNav(screen);
+  activeScreen =
+    screen;
+
+  setActiveNav(
+    screen
+  );
 
   if (screen === "files") {
     renderFileManager();
@@ -221,36 +218,38 @@ function renderFileManager(): void {
 
   if (generatedFiles.length === 0) {
     fileList.innerHTML =
-      '<div class="file-empty"><div><div class="file-empty-title">AI生成ファイルはありません</div><div class="file-empty-copy">新しいチャットからプロジェクトを生成すると、ここに保存されます。</div></div></div>';
+      '<div class="file-empty"><div class="file-empty-title">AI生成ファイルはありません</div><div class="file-empty-copy">新しいチャットからプロジェクトを生成すると、ここに保存されます。</div></div>';
     return;
   }
 
   fileList.innerHTML =
-    generatedFiles.map(
-      (file, index) => {
-        const safeName =
-          file.name
-            .replaceAll("&", "&amp;")
-            .replaceAll("<", "&lt;")
-            .replaceAll(">", "&gt;")
-            .replaceAll('"', "&quot;");
+    generatedFiles
+      .map(
+        (file, index) => {
+          const safeName =
+            file.name
+              .replaceAll("&", "&amp;")
+              .replaceAll("<", "&lt;")
+              .replaceAll(">", "&gt;")
+              .replaceAll('"', "&quot;");
 
-        return [
-          '<article class="file-row">',
-          '  <div class="file-type">SB3</div>',
-          '  <div class="file-row-copy">',
-          '    <div class="file-row-name">' + safeName + '</div>',
-          '    <div class="file-row-meta">Scratch 3 Project</div>',
-          '  </div>',
-          '  <div class="file-row-actions">',
-          '    <button class="file-action" data-file-preview="' + index + '" type="button">プレビュー</button>',
-          '    <button class="file-action" data-file-save="' + index + '" type="button">保存</button>',
-          '    <button class="file-action file-action-delete" data-file-delete="' + index + '" type="button">削除</button>',
-          '  </div>',
-          '</article>'
-        ].join("");
-      }
-    ).join("");
+          return [
+            '<article class="file-row">',
+            '  <div class="file-type">SB3</div>',
+            '  <div class="file-copy">',
+            '    <div class="file-name">' + safeName + '</div>',
+            '    <div class="file-meta">Scratch 3 Project</div>',
+            '  </div>',
+            '  <div class="file-actions">',
+            '    <button class="file-button" data-file-preview="' + index + '" type="button">プレビュー</button>',
+            '    <button class="file-button" data-file-save="' + index + '" type="button">保存</button>',
+            '    <button class="file-button file-button-delete" data-file-delete="' + index + '" type="button">削除</button>',
+            '  </div>',
+            '</article>'
+          ].join("");
+        }
+      )
+      .join("");
 }
 
 function renderPreviewState(): void {
@@ -315,9 +314,7 @@ async function saveProject(
 }
 
 document
-  .querySelectorAll<HTMLButtonElement>(
-    ".nav-button"
-  )
+  .querySelectorAll<HTMLButtonElement>(".nav-button")
   .forEach((button) => {
     button.addEventListener(
       "click",
@@ -335,13 +332,10 @@ document
 
           if (requestInput) {
             requestInput.value = "";
-            requestInput.style.height =
-              "auto";
+            requestInput.style.height = "auto";
           }
 
-          setStatus(
-            "新しいプロジェクトを作成できます。"
-          );
+          setStatus("");
         }
 
         showScreen(
@@ -366,13 +360,9 @@ fileList?.addEventListener(
     const deleteIndex =
       target.dataset.fileDelete;
 
-    if (
-      previewIndex !== undefined
-    ) {
+    if (previewIndex !== undefined) {
       const file =
-        generatedFiles[
-          Number(previewIndex)
-        ];
+        generatedFiles[Number(previewIndex)];
 
       if (!file) {
         return;
@@ -380,8 +370,7 @@ fileList?.addEventListener(
 
       generatedProject = null;
       generatedAssets = [];
-      loadedProject =
-        file.project;
+      loadedProject = file.project;
 
       showScreen(
         "preview"
@@ -390,13 +379,9 @@ fileList?.addEventListener(
       return;
     }
 
-    if (
-      saveIndex !== undefined
-    ) {
+    if (saveIndex !== undefined) {
       const file =
-        generatedFiles[
-          Number(saveIndex)
-        ];
+        generatedFiles[Number(saveIndex)];
 
       if (!file) {
         return;
@@ -420,9 +405,7 @@ fileList?.addEventListener(
       return;
     }
 
-    if (
-      deleteIndex !== undefined
-    ) {
+    if (deleteIndex !== undefined) {
       generatedFiles.splice(
         Number(deleteIndex),
         1
@@ -438,9 +421,7 @@ fileList?.addEventListener(
 );
 
 document
-  .querySelector<HTMLButtonElement>(
-    "#file-import"
-  )
+  .querySelector<HTMLButtonElement>("#file-import")
   ?.addEventListener(
     "click",
     () => {
@@ -492,9 +473,7 @@ fileInput?.addEventListener(
 );
 
 document
-  .querySelector<HTMLFormElement>(
-    "#composer"
-  )
+  .querySelector<HTMLFormElement>("#composer")
   ?.addEventListener(
     "submit",
     (event) => {
@@ -532,9 +511,7 @@ document
             rawPlan
           );
 
-        if (
-          plan.verdict === "OPPOSE"
-        ) {
+        if (plan.verdict === "OPPOSE") {
           setStatus(
             "この内容は現在の生成器では安定して実装できません。"
           );
@@ -625,9 +602,7 @@ document
   );
 
 document
-  .querySelector<HTMLButtonElement>(
-    "#preview-save"
-  )
+  .querySelector<HTMLButtonElement>("#preview-save")
   ?.addEventListener(
     "click",
     async () => {
@@ -688,3 +663,5 @@ requestInput?.addEventListener(
       ) + "px";
   }
 );
+
+setActiveNav("home");
