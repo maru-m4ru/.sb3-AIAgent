@@ -24,7 +24,7 @@ app.innerHTML = [
   '  <aside class="sidebar">',
   '    <div class="model-name">モデル名</div>',
   '    <nav class="nav" aria-label="メインメニュー">',
-  '      <button class="nav-button" id="new-chat" type="button">',
+  '      <button class="nav-button nav-button-active" id="new-chat" type="button" data-screen="home">',
   '        <span class="nav-icon nav-icon-chat" aria-hidden="true">',
   '          <svg viewBox="10 96 27 23" preserveAspectRatio="xMinYMid meet">',
   '            <path d="M13.68424 115.38229V100.5955C13.68424 100.02601 14.37607 99.6933 15.46626 99.6933H28.55459C29.53334 99.6933 30.56212 100.545 30.56212 101.39479V115.18249C30.56212 116.04364 29.87519 116.57033 29.15405 116.57033H15.16653C14.24952 116.57033 13.68424 116.00297 13.68424 115.38229Z" fill="#ffffff" stroke="#000000" stroke-width="1"></path>',
@@ -37,7 +37,7 @@ app.innerHTML = [
   '          <span class="nav-subtitle">new chat</span>',
   '        </span>',
   '      </button>',
-  '      <button class="nav-button" id="file-menu" type="button">',
+  '      <button class="nav-button" id="file-menu" type="button" data-screen="files">',
   '        <span class="nav-icon nav-icon-file" aria-hidden="true">',
   '          <svg viewBox="10 156 27 18" preserveAspectRatio="xMinYMid meet">',
   '            <path d="M13.21815 169.61688V158.70902H33.90658V169.61688Z" fill="#ffffff" stroke="#000000" stroke-width="1"></path>',
@@ -50,7 +50,7 @@ app.innerHTML = [
   '          <span class="nav-subtitle">file</span>',
   '        </span>',
   '      </button>',
-  '      <button class="nav-button" id="preview-menu" type="button">',
+  '      <button class="nav-button" id="preview-menu" type="button" data-screen="preview">',
   '        <span class="nav-icon nav-icon-preview" aria-hidden="true">',
   '          <svg viewBox="10 198 28 24" preserveAspectRatio="xMinYMid meet">',
   '            <path d="M13.6134 211.36846C13.6134 209.91607 13.6134 204.28334 13.6134 201.84533C13.6134 201.1471 14.13049 200.71099 15.0041 200.71099C19.23853 200.71099 31.84804 200.71099 34.54438 200.71099C35.53298 200.71099 36.47798 201.48818 36.47798 202.21611C36.47798 203.63809 36.47798 208.70108 36.47798 211.24454C36.47798 212.14157 35.80092 212.72524 35.03908 212.72524C32.59067 212.72524 19.35898 212.72524 15.00329 212.72524C14.12942 212.72524 13.6134 212.035 13.6134 211.36846Z" fill="#ffffff" stroke="#000000" stroke-width="1"></path>',
@@ -79,60 +79,59 @@ app.innerHTML = [
   '          <path d="M11.743 347C11.743 343.54666 14.39277 340.743 18 340.743C21.60724 340.743 24.257 343.38149 24.257 347C24.257 350.61851 21.61935 353.257 18 353.257C14.38065 353.257 11.743 350.45334 11.743 347Z M18.08239 349.20336C19.4631 349.20336 20.58239 348.08407 20.58239 346.70336C20.58239 345.32265 19.4631 344.20336 18.08239 344.20336C16.70168 344.20336 15.58239 345.32265 15.58239 346.70336C15.58239 348.08407 16.70168 349.20336 18.08239 349.20336Z" fill="#000000" fill-rule="evenodd"></path>',
   '        </svg>',
   '      </button>',
-  '      <div class="settings-popover" id="settings-popover" hidden>',
-  '        <div class="settings-title">SB3 AI Agent</div>',
-  '        <div class="settings-body">Scratch 3プロジェクト生成。<br>プレビューはTurboWarp Runtimeを使用します。</div>',
-  '      </div>',
   '    </div>',
   '    <input class="hidden-input" id="file-input" type="file" accept=".sb3,application/x.scratch.sb3,application/zip">',
   '  </aside>',
   '  <main class="workspace">',
-  '    <section class="hero">',
-  '      <div class="hero-copy">',
-  '        <h1 class="hero-title">モデル名</h1>',
-  '        <span class="hero-version">(バージョン)</span>',
+  '    <section class="screen screen-home" id="screen-home">',
+  '      <div class="hero">',
+  '        <div class="hero-copy">',
+  '          <h1 class="hero-title">モデル名</h1>',
+  '          <span class="hero-version">(バージョン)</span>',
+  '        </div>',
   '      </div>',
+  '      <section class="composer-area">',
+  '        <form class="composer" id="composer">',
+  '          <textarea class="composer-input" id="request" rows="1" placeholder="作成したいプロジェクトのイメージは？" aria-label="Scratchプロジェクトの作成指示"></textarea>',
+  '          <button class="send-button" type="submit" aria-label="生成">',
+  '            <svg viewBox="0 0 18 18" aria-hidden="true">',
+  '              <circle cx="9" cy="9" r="7.634" fill="#006eff"></circle>',
+  '              <path d="M9 12.2V5.6M6.55 8.05L9 5.6l2.45 2.45" fill="none" stroke="#ffffff" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"></path>',
+  '            </svg>',
+  '          </button>',
+  '        </form>',
+  '        <div class="status" id="status">新しいプロジェクトを作成できます。</div>',
+  '      </section>',
   '    </section>',
-  '    <section class="composer-area">',
-  '      <form class="composer" id="composer">',
-  '        <textarea class="composer-input" id="request" rows="1" placeholder="作成したいプロジェクトのイメージは？" aria-label="Scratchプロジェクトの作成指示"></textarea>',
-  '        <button class="send-button" type="submit" aria-label="生成">',
-  '          <svg viewBox="0 0 18 18" aria-hidden="true">',
-  '            <circle cx="9" cy="9" r="7.634" fill="#006eff"></circle>',
-  '            <path d="M9 12.2V5.6M6.55 8.05L9 5.6l2.45 2.45" fill="none" stroke="#ffffff" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round"></path>',
-  '          </svg>',
-  '        </button>',
-  '      </form>',
-  '      <div class="status" id="status">新しいプロジェクトを作成できます。</div>',
+  '    <section class="screen screen-files" id="screen-files" hidden>',
+  '      <div class="screen-header">',
+  '        <div>',
+  '          <h1 class="screen-title">AI生成ファイル</h1>',
+  '          <div class="screen-subtitle">generated files</div>',
+  '        </div>',
+  '        <button class="screen-primary" id="file-import" type="button">.sb3を取り込む</button>',
+  '      </div>',
+  '      <div class="section-rule"></div>',
+  '      <div class="file-list" id="file-list"></div>',
+  '    </section>',
+  '    <section class="screen screen-preview" id="screen-preview" hidden>',
+  '      <div class="screen-header">',
+  '        <div>',
+  '          <h1 class="screen-title">プレビュー</h1>',
+  '          <div class="screen-subtitle">TurboWarp</div>',
+  '        </div>',
+  '        <button class="screen-primary" id="preview-save" type="button">.sb3を保存</button>',
+  '      </div>',
+  '      <div class="section-rule"></div>',
+  '      <div class="preview-workspace">',
+  '        <div class="preview-stage" id="preview-stage"></div>',
+  '        <div class="preview-empty" id="preview-empty">',
+  '          <div class="preview-empty-title">プレビューするプロジェクトがありません</div>',
+  '          <div class="preview-empty-copy">新しいチャットで生成するか、ファイルからプロジェクトを読み込んでください。</div>',
+  '        </div>',
+  '      </div>',
   '    </section>',
   '  </main>',
-  '</div>',
-  '<div class="file-overlay" id="file-overlay" hidden>',
-  '  <div class="file-manager" role="dialog" aria-modal="true" aria-labelledby="file-manager-title">',
-  '    <div class="file-manager-head">',
-  '      <div>',
-  '        <div class="file-manager-title" id="file-manager-title">AI生成ファイル</div>',
-  '        <div class="file-manager-subtitle">generated files</div>',
-  '      </div>',
-  '      <button class="modal-close" id="file-close" type="button" aria-label="閉じる">×</button>',
-  '    </div>',
-  '    <div class="file-list" id="file-list"></div>',
-  '    <div class="file-manager-actions">',
-  '      <button class="file-import" id="file-import" type="button">.sb3を取り込む</button>',
-  '    </div>',
-  '  </div>',
-  '</div>',
-  '<div class="preview-overlay" id="preview-overlay" hidden>',
-  '  <div class="preview-shell" role="dialog" aria-modal="true" aria-labelledby="preview-title">',
-  '    <div class="preview-head">',
-  '      <div class="preview-title" id="preview-title">TurboWarp プレビュー</div>',
-  '      <button class="preview-close" id="preview-close" type="button" aria-label="閉じる">×</button>',
-  '    </div>',
-  '    <div class="preview-stage" id="preview-stage"></div>',
-  '    <div class="preview-actions">',
-  '      <button class="preview-save" id="preview-save" type="button">.sb3を保存</button>',
-  '    </div>',
-  '  </div>',
   '</div>'
 ].join("");
 
@@ -150,26 +149,22 @@ let generatedProject:
 let generatedAssets:
   ReturnType<typeof createScratchAsset>[] = [];
 let generatedFiles: GeneratedFile[] = [];
+let activeScreen = "home";
 
 const requestInput =
   document.querySelector<HTMLTextAreaElement>("#request");
-
 const status =
   document.querySelector<HTMLDivElement>("#status");
-
 const fileInput =
   document.querySelector<HTMLInputElement>("#file-input");
-
-const fileOverlay =
-  document.querySelector<HTMLDivElement>("#file-overlay");
-
 const fileList =
   document.querySelector<HTMLDivElement>("#file-list");
-
-const settingsPopover =
-  document.querySelector<HTMLDivElement>(
-    "#settings-popover"
-  );
+const previewStage =
+  document.querySelector<HTMLDivElement>("#preview-stage");
+const previewEmpty =
+  document.querySelector<HTMLDivElement>("#preview-empty");
+const settingsButton =
+  document.querySelector<HTMLButtonElement>("#settings-menu");
 
 function getCurrentProject(): ScratchLoaded | null {
   if (generatedProject) {
@@ -199,6 +194,52 @@ function clearProjectState(): void {
   loadedProject = null;
 }
 
+function setActiveNav(screen: string): void {
+  document
+    .querySelectorAll<HTMLButtonElement>(".nav-button")
+    .forEach((button) => {
+      button.classList.toggle(
+        "nav-button-active",
+        button.dataset.screen === screen
+      );
+    });
+}
+
+function showScreen(screen: string): void {
+  if (activeScreen === screen) {
+    if (screen === "files") {
+      renderFileManager();
+    }
+
+    if (screen === "preview") {
+      renderPreviewState();
+    }
+
+    return;
+  }
+
+  if (activeScreen === "preview" && screen !== "preview") {
+    closeTurboWarpPreview();
+  }
+
+  document
+    .querySelectorAll<HTMLElement>(".screen")
+    .forEach((element) => {
+      element.hidden = element.id !== "screen-" + screen;
+    });
+
+  activeScreen = screen;
+  setActiveNav(screen);
+
+  if (screen === "files") {
+    renderFileManager();
+  }
+
+  if (screen === "preview") {
+    renderPreviewState();
+  }
+}
+
 function renderFileManager(): void {
   if (!fileList) {
     return;
@@ -221,12 +262,14 @@ function renderFileManager(): void {
 
       return [
         '<div class="file-row">',
-        '  <div class="file-row-icon">.sb3</div>',
+        '  <div class="file-row-icon">',
+        '    <span>.sb3</span>',
+        '  </div>',
         '  <div class="file-row-copy">',
         '    <div class="file-row-name">' + safeName + '</div>',
         '    <div class="file-row-meta">Scratch 3 Project</div>',
         '  </div>',
-        '  <button class="file-action file-action-preview" data-file-preview="' + index + '" type="button">表示</button>',
+        '  <button class="file-action" data-file-preview="' + index + '" type="button">プレビュー</button>',
         '  <button class="file-action" data-file-save="' + index + '" type="button">保存</button>',
         '  <button class="file-action file-action-delete" data-file-delete="' + index + '" type="button">削除</button>',
         '</div>'
@@ -234,17 +277,33 @@ function renderFileManager(): void {
     }).join("");
 }
 
-function openFileManager(): void {
-  renderFileManager();
+function renderPreviewState(): void {
+  const project = getCurrentProject();
+  const hasProject = Boolean(project);
 
-  if (fileOverlay) {
-    fileOverlay.hidden = false;
+  if (previewEmpty) {
+    previewEmpty.hidden = hasProject;
+  }
+
+  if (previewStage) {
+    previewStage.hidden = !hasProject;
+  }
+
+  if (hasProject) {
+    void startTurboWarpPreview(project!);
   }
 }
 
-function closeFileManager(): void {
-  if (fileOverlay) {
-    fileOverlay.hidden = true;
+async function startTurboWarpPreview(
+  project: ScratchLoaded
+): Promise<void> {
+  setStatus("TurboWarpプレビューを準備しています...");
+
+  try {
+    await openTurboWarpPreview(project);
+    setStatus("TurboWarpプレビューを表示しています。");
+  } catch (error) {
+    setStatus(String(error));
   }
 }
 
@@ -262,50 +321,34 @@ async function saveProject(
 }
 
 document
-  .querySelector<HTMLButtonElement>("#new-chat")
-  ?.addEventListener(
-    "click",
-    () => {
-      closeTurboWarpPreview();
-      closeFileManager();
-      clearProjectState();
+  .querySelectorAll<HTMLButtonElement>(".nav-button")
+  .forEach((button) => {
+    button.addEventListener(
+      "click",
+      () => {
+        const screen =
+          button.dataset.screen;
 
-      if (requestInput) {
-        requestInput.value = "";
-        requestInput.style.height = "auto";
+        if (!screen) {
+          return;
+        }
+
+        if (screen === "home") {
+          closeTurboWarpPreview();
+          clearProjectState();
+
+          if (requestInput) {
+            requestInput.value = "";
+            requestInput.style.height = "auto";
+          }
+
+          setStatus("新しいプロジェクトを作成できます。");
+        }
+
+        showScreen(screen);
       }
-
-      setStatus("新しいチャットを開始しました。");
-      requestInput?.focus();
-    }
-  );
-
-document
-  .querySelector<HTMLButtonElement>("#file-menu")
-  ?.addEventListener(
-    "click",
-    () => {
-      openFileManager();
-    }
-  );
-
-document
-  .querySelector<HTMLButtonElement>("#file-close")
-  ?.addEventListener(
-    "click",
-    () => {
-      closeFileManager();
-    }
-  );
-
-document
-  .querySelector<HTMLButtonElement>("#file-import")
-  ?.addEventListener(
-    "click",
-    () => {
-      fileInput?.click();
-    }
-  );
+    );
+  });
 
 fileList?.addEventListener(
   "click",
@@ -315,10 +358,8 @@ fileList?.addEventListener(
 
     const previewIndex =
       target.dataset.filePreview;
-
     const saveIndex =
       target.dataset.fileSave;
-
     const deleteIndex =
       target.dataset.fileDelete;
 
@@ -331,25 +372,10 @@ fileList?.addEventListener(
       }
 
       generatedProject = null;
+      generatedAssets = [];
       loadedProject = file.project;
-      closeFileManager();
 
-      setStatus(
-        "TurboWarpプレビューを準備しています..."
-      );
-
-      try {
-        await openTurboWarpPreview(
-          file.project
-        );
-
-        setStatus(
-          "TurboWarpプレビューを表示しています。"
-        );
-      } catch (error) {
-        setStatus(String(error));
-      }
-
+      showScreen("preview");
       return;
     }
 
@@ -367,9 +393,7 @@ fileList?.addEventListener(
           file.name
         );
 
-        setStatus(
-          "ファイルを保存しました。"
-        );
+        setStatus("ファイルを保存しました。");
       } catch (error) {
         setStatus(String(error));
       }
@@ -389,6 +413,15 @@ fileList?.addEventListener(
   }
 );
 
+document
+  .querySelector<HTMLButtonElement>("#file-import")
+  ?.addEventListener(
+    "click",
+    () => {
+      fileInput?.click();
+    }
+  );
+
 fileInput?.addEventListener(
   "change",
   async () => {
@@ -399,9 +432,7 @@ fileInput?.addEventListener(
       return;
     }
 
-    setStatus(
-      "プロジェクトを読み込んでいます..."
-    );
+    setStatus("プロジェクトを読み込んでいます...");
 
     try {
       loadedProject =
@@ -410,6 +441,7 @@ fileInput?.addEventListener(
       generatedProject = null;
       generatedAssets = [];
 
+      showScreen("preview");
       setStatus(
         "読み込み完了: " + file.name
       );
@@ -437,21 +469,16 @@ document
         requestInput.value.trim();
 
       if (!request) {
-        setStatus(
-          "生成内容を入力してください。"
-        );
+        setStatus("生成内容を入力してください。");
         requestInput.focus();
         return;
       }
 
-      setStatus(
-        "生成計画を作成しています..."
-      );
+      setStatus("生成計画を作成しています...");
 
       try {
         const rawPlan =
           planScratchRequest(request);
-
         const plan =
           validateGenerationPlan(rawPlan);
 
@@ -519,59 +546,13 @@ document
           }
         });
 
-        renderFileManager();
-
-        setStatus(
-          "生成完了。ファイルからAI生成ファイルを管理できます。"
-        );
+        showScreen("preview");
+        setStatus("生成完了。TurboWarpでプレビューしています。");
       } catch (error) {
         generatedProject = null;
         generatedAssets = [];
         setStatus(String(error));
       }
-    }
-  );
-
-document
-  .querySelector<HTMLButtonElement>("#preview-menu")
-  ?.addEventListener(
-    "click",
-    async () => {
-      const project =
-        getCurrentProject();
-
-      if (!project) {
-        setStatus(
-          "先にプロジェクトを生成するか、AI生成ファイルを開いてください。"
-        );
-        return;
-      }
-
-      setStatus(
-        "TurboWarpプレビューを準備しています..."
-      );
-
-      try {
-        await openTurboWarpPreview(
-          project
-        );
-
-        setStatus(
-          "TurboWarpプレビューを表示しています。"
-        );
-      } catch (error) {
-        setStatus(String(error));
-      }
-    }
-  );
-
-document
-  .querySelector<HTMLButtonElement>("#preview-close")
-  ?.addEventListener(
-    "click",
-    () => {
-      closeTurboWarpPreview();
-      setStatus("プレビューを閉じました。");
     }
   );
 
@@ -603,39 +584,24 @@ document
           filename
         );
 
-        setStatus(
-          ".sb3を保存しました。"
-        );
+        setStatus(".sb3を保存しました。");
       } catch (error) {
         setStatus(String(error));
       }
     }
   );
 
-document
-  .querySelector<HTMLButtonElement>("#settings-menu")
-  ?.addEventListener(
-    "click",
-    () => {
-      if (!settingsPopover) {
-        return;
-      }
-
-      settingsPopover.hidden =
-        !settingsPopover.hidden;
-    }
-  );
+settingsButton?.addEventListener(
+  "click",
+  () => {
+    setStatus("設定画面は準備中です。");
+  }
+);
 
 requestInput?.addEventListener(
   "input",
   () => {
-    if (!requestInput) {
-      return;
-    }
-
-    requestInput.style.height =
-      "auto";
-
+    requestInput.style.height = "auto";
     requestInput.style.height =
       Math.min(
         requestInput.scrollHeight,
