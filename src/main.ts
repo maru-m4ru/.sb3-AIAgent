@@ -59,7 +59,7 @@ app.innerHTML = [
   '  <main class="workspace">',
   '    <section class="screen screen-home" id="screen-home">',
   '      <div class="home-reference">',
-  '        <img class="home-reference-image" src="' + uiBase + 'ui/reference.svg" alt="">',
+  '        <img class="home-reference-image" src="' + uiBase + 'reference.svg" alt="">',
   '        <form class="reference-composer" id="composer">',
   '          <textarea class="reference-input" id="request" rows="1" aria-label="Scratchプロジェクトの作成指示" spellcheck="false"></textarea>',
   '          <button class="reference-send" type="submit" aria-label="生成">',
