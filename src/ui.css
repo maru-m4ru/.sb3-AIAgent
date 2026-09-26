@@ -156,11 +156,11 @@ button {
 }
 
 #file-menu .nav-subtitle {
-  margin-left: 23px;
+  margin-left: 8px;
 }
 
 #preview-menu .nav-subtitle {
-  margin-left: 27px;
+  margin-left: 13px;
 }
 
 .sidebar-bottom {
@@ -288,6 +288,11 @@ button {
 
 .screen:not(.screen-home) {
   padding: 30px 8px 0;
+}
+
+.screen-files {
+  height: calc(100vh - 26px);
+  overflow-y: auto;
 }
 
 .screen-header {
