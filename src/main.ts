@@ -21,82 +21,152 @@ if (!app) {
   throw new Error("App root was not found.");
 }
 
-const uiBase =
-  new URL(
-    "../ui/",
-    import.meta.url
-  ).href;
+const icons = {
+  newChat: `
+<svg viewBox="0 0 32 32" aria-hidden="true">
+  <path d="M4 8.5a2.5 2.5 0 0 1 2.5-2.5h12a2.5 2.5 0 0 1 2.5 2.5v9A2.5 2.5 0 0 1 18.5 20H10l-5 4v-15.5Z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+  <path d="m20 10 6-6 3 3-6 6-3.6.7.6-3.7Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+</svg>`,
+  file: `
+<svg viewBox="0 0 32 32" aria-hidden="true">
+  <path d="M5 12h22v14H5z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+  <path d="M16 3v12M11.5 7.5 16 3l4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`,
+  preview: `
+<svg viewBox="0 0 32 32" aria-hidden="true">
+  <rect x="4.5" y="6" width="23" height="15" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+  <path d="M11 26h10M16 21v5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+</svg>`,
+  settings: `
+<svg viewBox="0 0 32 32" aria-hidden="true">
+  <path d="m16 4 2 2.5 3-.2.8 3 2.7 1.3-1 2.8 1.8 2.4-1.8 2.4 1 2.8-2.7 1.3-.8 3-3-.2L16 28l-2-2.4-3 .2-.8-3-2.7-1.3 1-2.8-1.8-2.4 1.8-2.4-1-2.8 2.7-1.3.8-3 3 .2L16 4Z" fill="currentColor"/>
+  <circle cx="16" cy="16" r="5" fill="#fff"/>
+</svg>`,
+  send: `
+<svg viewBox="0 0 32 32" aria-hidden="true">
+  <circle cx="16" cy="16" r="14" fill="#1677ff"/>
+  <path d="m16 23V10M11.5 14.5 16 10l4.5 4.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`
+};
 
-const uiAsset =
-  uiBase;
+app.innerHTML = `
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-brand">モデル名</div>
 
-app.innerHTML = [
-  '<div class="ui-frame">',
-  '  <aside class="sidebar">',
-  '    <div class="sidebar-model">モデル名</div>',
-  '    <nav class="sidebar-nav" aria-label="メインメニュー">',
-  '      <button class="nav-button" id="new-chat" type="button" data-screen="home">',
-  '        <img class="nav-icon nav-icon-new" src="' + uiAsset + 'new-chat.svg" alt="">',
-  '        <span class="nav-label"><span class="nav-title">新しいチャット</span><span class="nav-subtitle">new chat</span></span>',
-  '      </button>',
-  '      <button class="nav-button" id="file-menu" type="button" data-screen="files">',
-  '        <img class="nav-icon nav-icon-file" src="' + uiAsset + 'file.svg" alt="">',
-  '        <span class="nav-label"><span class="nav-title">ファイル</span><span class="nav-subtitle">file</span></span>',
-  '      </button>',
-  '      <button class="nav-button" id="preview-menu" type="button" data-screen="preview">',
-  '        <img class="nav-icon nav-icon-preview" src="' + uiAsset + 'preview.svg" alt="">',
-  '        <span class="nav-label"><span class="nav-title">プレビュー</span><span class="nav-subtitle">preview</span></span>',
-  '      </button>',
-  '    </nav>',
-  '    <button class="settings-button" id="settings-menu" type="button" aria-label="設定">',
-  '      <img src="' + uiAsset + 'settings.svg" alt="">',
-  '    </button>',
-  '    <input class="hidden-input" id="file-input" type="file" accept=".sb3,application/x.scratch.sb3,application/zip">',
-  '  </aside>',
-  '  <main class="content">',
-  '    <section class="screen screen-home" id="screen-home">',
-  '      <h1 class="home-title">モデル名<span>(バージョン)</span></h1>',
-  '      <form class="prompt-box" id="composer">',
-  '        <textarea class="prompt-input" id="request" rows="1" aria-label="Scratchプロジェクトの作成指示" placeholder="作成したいプロジェクトのイメージは？" spellcheck="false"></textarea>',
-  '        <button class="prompt-send" type="submit" aria-label="生成">',
-  '          <img src="' + uiAsset + 'send.svg" alt="">',
-  '        </button>',
-  '      </form>',
-  '      <div class="home-status" id="status" aria-live="polite"></div>',
-  '    </section>',
-  '    <section class="screen screen-files" id="screen-files" hidden>',
-  '      <header class="screen-topbar">',
-  '        <div>',
-  '          <h1 class="screen-title">AI生成ファイル</h1>',
-  '          <div class="screen-subtitle">generated files</div>',
-  '        </div>',
-  '        <button class="screen-action" id="file-import" type="button">.sb3を取り込む</button>',
-  '      </header>',
-  '      <div class="screen-line"></div>',
-  '      <div class="file-list" id="file-list"></div>',
-  '    </section>',
-  '    <section class="screen screen-preview" id="screen-preview" hidden>',
-  '      <header class="screen-topbar">',
-  '        <div>',
-  '          <h1 class="screen-title">プレビュー</h1>',
-  '          <div class="screen-subtitle">TurboWarp</div>',
-  '        </div>',
-  '        <button class="screen-action" id="preview-save" type="button">.sb3を保存</button>',
-  '      </header>',
-  '      <div class="screen-line"></div>',
-  '      <div class="preview-area">',
-  '        <div class="preview-box">',
-  '          <div class="preview-stage" id="preview-stage"></div>',
-  '          <div class="preview-empty" id="preview-empty">',
-  '            <div class="preview-empty-title">プレビューするプロジェクトがありません</div>',
-  '            <div class="preview-empty-copy">新しいチャットで生成するか、ファイルからプロジェクトを読み込んでください。</div>',
-  '          </div>',
-  '        </div>',
-  '      </div>',
-  '    </section>',
-  '  </main>',
-  '</div>'
-].join("");
+    <nav class="sidebar-nav" aria-label="メインメニュー">
+      <button class="nav-item nav-item-active" type="button" data-screen="home">
+        <span class="nav-icon">${icons.newChat}</span>
+        <span class="nav-text">
+          <span class="nav-title">新しいチャット</span>
+          <span class="nav-subtitle">new chat</span>
+        </span>
+      </button>
+
+      <button class="nav-item" type="button" data-screen="files">
+        <span class="nav-icon">${icons.file}</span>
+        <span class="nav-text">
+          <span class="nav-title">ファイル</span>
+          <span class="nav-subtitle">file</span>
+        </span>
+      </button>
+
+      <button class="nav-item" type="button" data-screen="preview">
+        <span class="nav-icon">${icons.preview}</span>
+        <span class="nav-text">
+          <span class="nav-title">プレビュー</span>
+          <span class="nav-subtitle">preview</span>
+        </span>
+      </button>
+    </nav>
+
+    <button class="settings-button" id="settings-menu" type="button" aria-label="設定">
+      ${icons.settings}
+    </button>
+
+    <input
+      class="hidden-input"
+      id="file-input"
+      type="file"
+      accept=".sb3,application/x.scratch.sb3,application/zip"
+    >
+  </aside>
+
+  <main class="main">
+    <section class="screen screen-home" id="screen-home">
+      <div class="home-content">
+        <div class="model-heading">
+          <h1>モデル名</h1>
+          <div>(バージョン)</div>
+        </div>
+
+        <form class="prompt-form" id="composer">
+          <textarea
+            class="prompt-input"
+            id="request"
+            rows="1"
+            placeholder="作成したいプロジェクトのイメージは？"
+            aria-label="Scratchプロジェクトの作成指示"
+            spellcheck="false"
+          ></textarea>
+
+          <button class="prompt-send" type="submit" aria-label="生成">
+            ${icons.send}
+          </button>
+        </form>
+
+        <div class="home-status" id="status" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <section class="screen screen-files" id="screen-files" hidden>
+      <div class="screen-content">
+        <header class="screen-header">
+          <div class="screen-heading">
+            <h1>ファイル</h1>
+            <p>generated files</p>
+          </div>
+          <button class="header-button" id="file-import" type="button">
+            .sb3を取り込む
+          </button>
+        </header>
+
+        <div class="screen-divider"></div>
+
+        <div class="file-list" id="file-list"></div>
+      </div>
+    </section>
+
+    <section class="screen screen-preview" id="screen-preview" hidden>
+      <div class="screen-content">
+        <header class="screen-header">
+          <div class="screen-heading">
+            <h1>プレビュー</h1>
+            <p>preview</p>
+          </div>
+          <button class="header-button" id="preview-save" type="button">
+            .sb3を保存
+          </button>
+        </header>
+
+        <div class="screen-divider"></div>
+
+        <div class="preview-area">
+          <div class="preview-panel">
+            <div class="preview-overlay" id="preview-overlay" hidden>
+              <div class="preview-stage" id="preview-stage"></div>
+            </div>
+            <div class="preview-empty" id="preview-empty">
+              <div class="preview-empty-title">プレビューするプロジェクトがありません</div>
+              <div class="preview-empty-copy">新しいチャットで生成するか、ファイルからプロジェクトを読み込んでください。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+`;
 
 type ScratchLoaded =
   Awaited<ReturnType<typeof loadScratchProjectFile>>;
@@ -125,6 +195,9 @@ const fileInput =
 
 const fileList =
   document.querySelector<HTMLDivElement>("#file-list");
+
+const previewOverlay =
+  document.querySelector<HTMLDivElement>("#preview-overlay");
 
 const previewStage =
   document.querySelector<HTMLDivElement>("#preview-stage");
@@ -169,10 +242,10 @@ function setActiveNav(
   screen: string
 ): void {
   document
-    .querySelectorAll<HTMLButtonElement>(".nav-button")
+    .querySelectorAll<HTMLButtonElement>(".nav-item")
     .forEach((button) => {
       button.classList.toggle(
-        "nav-button-active",
+        "nav-item-active",
         button.dataset.screen === screen
       );
     });
@@ -217,8 +290,14 @@ function renderFileManager(): void {
   }
 
   if (generatedFiles.length === 0) {
-    fileList.innerHTML =
-      '<div class="file-empty"><div class="file-empty-title">AI生成ファイルはありません</div><div class="file-empty-copy">新しいチャットからプロジェクトを生成すると、ここに保存されます。</div></div>';
+    fileList.innerHTML = `
+      <div class="file-empty">
+        <div>
+          <div class="file-empty-title">AI生成ファイルはありません</div>
+          <div class="file-empty-copy">新しいチャットでプロジェクトを生成すると、ここに保存されます。</div>
+        </div>
+      </div>
+    `;
     return;
   }
 
@@ -233,20 +312,20 @@ function renderFileManager(): void {
               .replaceAll(">", "&gt;")
               .replaceAll('"', "&quot;");
 
-          return [
-            '<article class="file-row">',
-            '  <div class="file-type">SB3</div>',
-            '  <div class="file-copy">',
-            '    <div class="file-name">' + safeName + '</div>',
-            '    <div class="file-meta">Scratch 3 Project</div>',
-            '  </div>',
-            '  <div class="file-actions">',
-            '    <button class="file-button" data-file-preview="' + index + '" type="button">プレビュー</button>',
-            '    <button class="file-button" data-file-save="' + index + '" type="button">保存</button>',
-            '    <button class="file-button file-button-delete" data-file-delete="' + index + '" type="button">削除</button>',
-            '  </div>',
-            '</article>'
-          ].join("");
+          return `
+            <article class="file-row">
+              <div class="file-badge">SB3</div>
+              <div class="file-info">
+                <div class="file-name">${safeName}</div>
+                <div class="file-meta">Scratch 3 Project</div>
+              </div>
+              <div class="file-actions">
+                <button class="file-action" data-file-preview="${index}" type="button">プレビュー</button>
+                <button class="file-action" data-file-save="${index}" type="button">保存</button>
+                <button class="file-action file-action-muted" data-file-delete="${index}" type="button">削除</button>
+              </div>
+            </article>
+          `;
         }
       )
       .join("");
@@ -262,6 +341,11 @@ function renderPreviewState(): void {
   if (previewEmpty) {
     previewEmpty.hidden =
       hasProject;
+  }
+
+  if (previewOverlay) {
+    previewOverlay.hidden =
+      !hasProject;
   }
 
   if (previewStage) {
@@ -314,7 +398,7 @@ async function saveProject(
 }
 
 document
-  .querySelectorAll<HTMLButtonElement>(".nav-button")
+  .querySelectorAll<HTMLButtonElement>(".nav-item")
   .forEach((button) => {
     button.addEventListener(
       "click",
@@ -515,7 +599,6 @@ document
           setStatus(
             "この内容は現在の生成器では安定して実装できません。"
           );
-
           return;
         }
 
@@ -613,7 +696,6 @@ document
         setStatus(
           "保存できるプロジェクトがありません。"
         );
-
         return;
       }
 
@@ -659,7 +741,7 @@ requestInput?.addEventListener(
     requestInput.style.height =
       Math.min(
         requestInput.scrollHeight,
-        140
+        150
       ) + "px";
   }
 );
