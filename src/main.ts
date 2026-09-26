@@ -23,10 +23,13 @@ if (!app) {
 }
 
 const uiBase =
-  import.meta.env.BASE_URL;
+  new URL(
+    "../ui/",
+    import.meta.url
+  ).href;
 
 const uiAsset =
-  uiBase + "ui/";
+  uiBase;
 
 app.innerHTML = [
   '<div class="app-shell">',
